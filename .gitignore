@@ -1,0 +1,30 @@
+assets/external/
+.web
+*.py[cod]
+.states
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Env
+.env
+
+# Reflex
+.web/
+.states/
+*.db
+reflex.lock/
+
+# Caches
+.pytest_cache/
+.ruff_cache/
+
+# OS
+.DS_Store
