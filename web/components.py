@@ -17,6 +17,30 @@ def header() -> rx.Component:
             spacing="3",
         ),
         rx.spacer(),
+        rx.tooltip(
+            rx.hstack(
+                rx.text(State.cat_emoji, font_size="16px"),
+                rx.text(
+                    State.analyses_count,
+                    font_family="monospace",
+                    font_weight="600",
+                    color="var(--grass-11)",
+                    class_name=rx.cond(State.counter_animating, "counter-pop", ""),
+                ),
+                rx.cond(
+                    State.milestone_reached,
+                    rx.text("\U0001f389", font_size="13px", class_name="milestone-flash"),
+                    rx.fragment(),
+                ),
+                align="center",
+                spacing="2",
+                padding="3px 10px",
+                background="var(--grass-a2)",
+                border="1px solid var(--grass-a5)",
+                border_radius="20px",
+            ),
+            content=State.cat_title,
+        ),
         rx.cond(
             State.has_report,
             rx.button(rx.icon("rotate-ccw", size=15), "New", on_click=State.clear_all, variant="soft", color_scheme="gray", size="2", class_name="no-print"),
@@ -75,7 +99,7 @@ def upload_zone() -> rx.Component:
         rx.hstack(
             rx.button(
                 "Analyse",
-                on_click=[State.handle_upload(rx.upload_files("upload")), State.run_analysis],
+                on_click=[State.handle_upload(rx.upload_files("upload")), State.run_analysis, State.refresh_counter],
                 disabled=(rx.selected_files("upload").length() == 0) & ~State.can_analyse,
                 color_scheme="grass",
                 size="3",
@@ -91,28 +115,28 @@ def upload_zone() -> rx.Component:
             rx.button(
                 rx.icon("book-open", size=16),
                 "Knowledge agent",
-                on_click=lambda: State.load_sample("knowledge"),
+                on_click=lambda: [State.load_sample("knowledge"), State.refresh_counter],
                 variant="soft",
                 size="3",
             ),
             rx.button(
                 rx.icon("bot", size=16),
                 "Autonomous agent",
-                on_click=lambda: State.load_sample("agentic"),
+                on_click=lambda: [State.load_sample("agentic"), State.refresh_counter],
                 variant="soft",
                 size="3",
             ),
             rx.button(
                 rx.icon("terminal", size=16),
                 "Code interpreter",
-                on_click=lambda: State.load_sample("sandbox"),
+                on_click=lambda: [State.load_sample("sandbox"), State.refresh_counter],
                 variant="soft",
                 size="3",
             ),
             rx.button(
                 rx.icon("presentation", size=16),
                 "Generated deck",
-                on_click=lambda: State.load_sample("deck"),
+                on_click=lambda: [State.load_sample("deck"), State.refresh_counter],
                 variant="soft",
                 size="3",
             ),

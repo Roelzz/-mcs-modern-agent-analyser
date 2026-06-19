@@ -1,7 +1,11 @@
 """Reflex state: upload, parse, analyse, and expose structured view-models."""
 
+import asyncio
 import json
+import re
+import time
 
+import httpx
 import reflex as rx
 from loguru import logger
 
@@ -62,6 +66,60 @@ TAB_DEFS: list[tuple[str, str]] = [
 _FILTERS = ("all", "critical", "warning", "info")
 
 
+# --- Community usage counter (shared komarev badge, same as the classic analyser) ---
+# Keyed on username=Roelzz, so this is the SAME counter both READMEs and both apps use;
+# every fetch/render bumps the one shared total. 30s cache throttles rapid refetches.
+_KOMAREV_URL = "https://komarev.com/ghpvc/?username=Roelzz&label=Repo%20Views&color=0e75b6&style=flat"
+
+_community_count_cache: dict[str, float | int] = {"count": 0, "fetched_at": 0.0}
+
+
+def _fetch_community_count() -> int:
+    """Fetch the shared view count from the komarev badge SVG (cached 30s)."""
+    now = time.time()
+    if now - _community_count_cache["fetched_at"] < 30:
+        return int(_community_count_cache["count"])
+    try:
+        resp = httpx.get(_KOMAREV_URL, headers={"User-Agent": "AgentAnalyserModern/1.0"}, timeout=5)
+        numbers = re.findall(r">([\d,]+)</", resp.text)
+        if numbers:
+            count = int(numbers[-1].replace(",", ""))
+            _community_count_cache["count"] = count
+            _community_count_cache["fetched_at"] = now
+            return count
+    except Exception as exc:  # noqa: BLE001
+        logger.warning(f"Failed to fetch community count: {exc}")
+    return int(_community_count_cache["count"])
+
+
+_CAT_MILESTONES: list[tuple[int, str, str]] = [
+    (1000, "\U0001f406", "Legendary Leopard"),
+    (500, "\U0001f42f", "Tiger Analyst"),
+    (250, "\U0001f981", "Lion Mode"),
+    (100, "\U0001f408\u200d\u2b1b", "Shadow Cat"),
+    (50, "\U0001f408", "Prowling Cat"),
+    (25, "\U0001f638", "Grinning Cat"),
+    (10, "\U0001f63a", "Happy Cat"),
+    (0, "\U0001f431", "Curious Kitten"),
+]
+
+_MILESTONE_THRESHOLDS: set[int] = {t for t, _, _ in _CAT_MILESTONES if t > 0}
+
+
+def _cat_emoji_for(count: int) -> str:
+    for threshold, emoji, _ in _CAT_MILESTONES:
+        if count >= threshold:
+            return emoji
+    return "\U0001f431"
+
+
+def _cat_title_for(count: int) -> str:
+    for threshold, _, title in _CAT_MILESTONES:
+        if count >= threshold:
+            return title
+    return "Curious Kitten"
+
+
 class State(rx.State):
     # Raw uploaded payloads
     transcript_text: str = ""
@@ -74,6 +132,11 @@ class State(rx.State):
     status: str = ""
     has_report: bool = False
     active_tab: str = "overview"
+
+    # Community usage counter (shared komarev counter, see _fetch_community_count)
+    analyses_count: int = 0
+    counter_animating: bool = False
+    milestone_reached: bool = False
 
     # Export payload
     full_md: str = ""
@@ -375,6 +438,14 @@ class State(rx.State):
                 return n
         return selectable[0]
 
+    @rx.var
+    def cat_emoji(self) -> str:
+        return _cat_emoji_for(self.analyses_count)
+
+    @rx.var
+    def cat_title(self) -> str:
+        return _cat_title_for(self.analyses_count)
+
     # ------------------------------------------------------------------
     # UI setters
     # ------------------------------------------------------------------
@@ -421,6 +492,21 @@ class State(rx.State):
 
     def select_component(self, cid: str):
         self.active_component = cid
+
+    # ------------------------------------------------------------------
+    # Usage counter (shared komarev counter)
+    # ------------------------------------------------------------------
+    async def refresh_counter(self):
+        """Fetch the shared komarev count and animate when it grows."""
+        prev = self.analyses_count
+        self.analyses_count = await asyncio.to_thread(_fetch_community_count)
+        if self.analyses_count > prev and prev > 0:
+            self.counter_animating = True
+            self.milestone_reached = any(prev < t <= self.analyses_count for t in _MILESTONE_THRESHOLDS)
+
+    def reset_counter_animation(self):
+        self.counter_animating = False
+        self.milestone_reached = False
 
     # ------------------------------------------------------------------
     # Upload routing

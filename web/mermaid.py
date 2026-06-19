@@ -69,6 +69,10 @@ def mermaid_script() -> rx.Component:
                         '.rx-Markdown h3 { margin-top: 1.4em; margin-bottom: 0.5em; }',
                         '.rx-Markdown blockquote { border-left: 3px solid var(--grass-8); padding: 6px 14px; margin: 10px 0; background: var(--grass-a2); border-radius: 0 6px 6px 0; }',
                         '.rx-Markdown ul, .rx-Markdown ol { padding-left: 1.4em; margin: 6px 0; }',
+                        '@keyframes counter-pop { 0% { transform: scale(1); } 50% { transform: scale(1.4); } 100% { transform: scale(1); } }',
+                        '.counter-pop { animation: counter-pop 0.4s ease-out; display: inline-block; }',
+                        '@keyframes milestone-flash { 0% { opacity: 1; transform: translateY(0); } 70% { opacity: 1; transform: translateY(-3px); } 100% { opacity: 0; transform: translateY(-6px); } }',
+                        '.milestone-flash { animation: milestone-flash 2s ease-out forwards; }',
                         '@media print { .no-print { display: none !important; } body { background: #fff !important; } [id="report-content"] { break-inside: avoid; } }',
                     ].join('\\n');
                     document.head.appendChild(style);

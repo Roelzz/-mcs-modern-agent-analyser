@@ -16,10 +16,12 @@ and severity-tagged quick-win findings.
 [![Tests: 120 passing](https://img.shields.io/badge/tests-120%20passing-brightgreen.svg)](#testing)
 [![Analysis: heuristics-only](https://img.shields.io/badge/analysis-heuristics--only-orange.svg)](#no-llm-fully-local)
 
-[![GitHub last commit](https://img.shields.io/github/last-commit/Roelzz/-mcs-modern-agent-analyser.svg)](https://github.com/Roelzz/-mcs-modern-agent-analyser/commits)
-[![GitHub issues](https://img.shields.io/github/issues/Roelzz/-mcs-modern-agent-analyser.svg)](https://github.com/Roelzz/-mcs-modern-agent-analyser/issues)
-[![GitHub stars](https://img.shields.io/github/stars/Roelzz/-mcs-modern-agent-analyser.svg?style=social)](https://github.com/Roelzz/-mcs-modern-agent-analyser/stargazers)
-![Visitors](https://visitor-badge.laobi.icu/badge?page_id=Roelzz.-mcs-modern-agent-analyser&left_text=visitors)
+[![GitHub last commit](https://img.shields.io/github/last-commit/Roelzz/mcs-modern-agent-analyser.svg)](https://github.com/Roelzz/mcs-modern-agent-analyser/commits)
+[![GitHub issues](https://img.shields.io/github/issues/Roelzz/mcs-modern-agent-analyser.svg)](https://github.com/Roelzz/mcs-modern-agent-analyser/issues)
+[![GitHub stars](https://img.shields.io/github/stars/Roelzz/mcs-modern-agent-analyser.svg?style=social)](https://github.com/Roelzz/mcs-modern-agent-analyser/stargazers)
+[![Repo Views](https://komarev.com/ghpvc/?username=Roelzz&label=Repo%20Views&color=0e75b6&style=flat)](https://github.com/Roelzz/mcs-modern-agent-analyser)
+
+<sub>📊 Repo Views is a shared counter across both the <a href="https://github.com/Roelzz/mcs-agent-analyser">classic</a> and modern analysers.</sub>
 
 ![Overview tab — headline metrics and severity-tagged findings](docs/screenshots/overview.png)
 
