@@ -28,3 +28,6 @@ reflex.lock/
 
 # OS
 .DS_Store
+
+# graphify generated knowledge-graph output
+graphify-out/
